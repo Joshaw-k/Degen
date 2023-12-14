@@ -1,66 +1,24 @@
-## Foundry
+Degen Gaming has selected the Avalanche blockchain, a leading blockchain platform for web3 gaming projects, to create a fast and low-fee token.
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+### DegenGamingToken
 
-Foundry consists of:
+Inherits from the OpenZeppelin `ERC20` standard, providing core token functionality like `minting`, `transfer`, and balance management. Named "DegenGamingToken" with symbol "DGT".
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+### Store Items
 
-## Documentation
+Introduces a concept of store items with attributes like `ID`, `owner`, `name`, and `price`.
+Stores these items in a mapping storeItems with the `ID` as the key.
 
-https://book.getfoundry.sh/
+### Owner Functions
 
-## Usage
+`mint`: Allows the owner (set in the constructor) to mint new DGT tokens.
+`addToStore`: Adds new items to the store with specified name and price.
 
-### Build
+### User Functions
 
-```shell
-$ forge build
-```
+`burn`: Allows users to burn their own DGT tokens.
+`redeem`: Allows users to redeem store items by paying the price in DGT. This function has some interesting aspects:
 
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- Users need to approve spending the required amount of DGT to the contract first.
+- The contract then uses transferFrom to transfer the DGT from the user to the item owner.
+  Finally, the item ownership is transferred to the user.

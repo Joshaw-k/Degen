@@ -4,23 +4,24 @@ pragma solidity ^0.8.19;
 import "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
 contract DegenGamingToken is ERC20 {
-    address public s_owner;
+    address public owner;
     uint itemCount;
 
-    struct Item {
-        address owner;
+    struct StoreItem {
+        uint id;
+        address itemOwner;
         string name;
-        uint256 cost;
+        uint256 price;
     }
 
-    mapping(uint => Item) public items;
+    mapping(uint => StoreItem) public storeItems;
 
     constructor() ERC20("DegenGamingToken", "DGT") {
-        s_owner = msg.sender;
+        owner = msg.sender;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == s_owner, "You are not the owner");
+        require(msg.sender == owner, "You are not the owner");
         _;
     }
 
@@ -29,9 +30,13 @@ contract DegenGamingToken is ERC20 {
     }
 
 
-    function addItem(string memory _name, uint _cost) public onlyOwner {
-        items[itemCount] = Item({owner: msg.sender, name: _name, cost: _cost});
+    function addToStore(string memory _name, uint _price) public onlyOwner {
         itemCount++;
+        StoreItem storage storeItem = storeItems[itemCount];
+        storeItem.id = itemCount;
+        storeItem.itemOwner = msg.sender;
+        storeItem.name = _name;
+        storeItem.price = _price;
     }
 
     function burn(uint value) public {
@@ -39,9 +44,10 @@ contract DegenGamingToken is ERC20 {
         _burn(msg.sender, value);
     }
 
-    function redeem(uint8 _itemCount) public {
-        require(_itemCount <= itemCount, "itemCount is out of bounds");
-        transfer(items[_itemCount].owner, items[_itemCount].cost);
-        items[_itemCount].owner = msg.sender;
+    function redeem(uint8 _id) public {
+        require(_id <= itemCount, "id is out of bounds");
+        approve(address(this),storeItems[_id].price);
+        transferFrom(msg.sender,storeItems[_id].itemOwner,storeItems[_id].price);
+        storeItems[_id].itemOwner = msg.sender;
     }
 }
